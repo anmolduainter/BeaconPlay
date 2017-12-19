@@ -2,7 +2,10 @@ package com.example.anmol.beacons;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,10 +17,13 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 
 import com.example.anmol.beacons.BeaconSearch.BeaconSearc;
+import com.example.anmol.beacons.BeaconSearch.RecyclerAdapter;
 import com.example.anmol.beacons.BeaconSimulator.BeaconSimu;
 
 import org.altbeacon.beacon.Beacon;
@@ -39,21 +45,15 @@ public class MainActivity extends AppCompatActivity{
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
+
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        checkPermission();
         setContentView(R.layout.activity_main);
         initializedLayout();
-        checkPermission();
-
-//        beaconManager = BeaconManager.getInstanceForApplication(this);
-//        // To detect proprietary beacons, you must add a line like below corresponding to your beacon
-//        // type.  Do a web search for "setBeaconLayout" to get the proper expression.
-//         beaconManager.getBeaconParsers().add(new BeaconParser().
-//                setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
-//        beaconManager.bind(this);
     }
 
 

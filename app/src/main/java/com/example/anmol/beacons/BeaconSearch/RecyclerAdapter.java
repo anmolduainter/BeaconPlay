@@ -38,10 +38,12 @@ public class RecyclerAdapter  extends RecyclerView.Adapter<RecyclerAdapter.ViewH
     @Override
     public void onBindViewHolder(RecyclerAdapter.ViewHolder holder, int position) {
         ArrayList<String> arrayList = arr.get(position);
-        holder.uuid.setText(arrayList.get(0));
-        holder.uuid.setText(arrayList.get(1));
-        holder.uuid.setText(arrayList.get(2));
-        holder.uuid.setText(arrayList.get(3));
+        if (arrayList.size()>0){
+            holder.uuid.setText(arrayList.get(0));
+            holder.major.setText(arrayList.get(1));
+            holder.minor.setText(arrayList.get(2));
+            holder.distance.setText(arrayList.get(3));
+        }
     }
     @Override
     public int getItemCount()

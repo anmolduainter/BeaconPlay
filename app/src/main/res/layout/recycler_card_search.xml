@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView
     android:layout_width="match_parent"
-    android:layout_height="190dp"
+    android:layout_height="200dp"
     android:layout_marginTop="10dp"
     android:layout_marginLeft="20dp"
     android:layout_marginRight="20dp"
@@ -98,9 +98,7 @@
             android:textSize="20sp"
             android:layout_margin="10dp"
             android:layout_below="@id/card_three"
-            android:text="Minor"
+            android:text="Distance"
             />
-
-
     </RelativeLayout>
 </android.support.v7.widget.CardView>

@@ -1,5 +1,6 @@
 package com.example.anmol.beacons.BeaconSearch;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -18,6 +19,7 @@ import com.example.anmol.beacons.R;
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
+import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
@@ -25,12 +27,13 @@ import org.altbeacon.beacon.Region;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class BeaconSearc extends Fragment implements BeaconConsumer{
+public class BeaconSearc extends Fragment  implements BeaconConsumer{
     RelativeLayout rl;
-    private BeaconManager beaconManager;
     private RecyclerView rv;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.Adapter adapter;
+    private BeaconManager beaconManager;
+
 
     public BeaconSearc() {
         // Required empty public constructor
@@ -38,6 +41,12 @@ public class BeaconSearc extends Fragment implements BeaconConsumer{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        beaconManager = BeaconManager.getInstanceForApplication(getActivity());
+        // To detect proprietary beacons, you must add a line like below corresponding to your beacon
+        // type.  Do a web search for "setBeaconLayout" to get the proper expression.
+        beaconManager.getBeaconParsers().add(new BeaconParser().
+                setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
+        beaconManager.bind(this);
     }
 
     @Override
@@ -45,28 +54,35 @@ public class BeaconSearc extends Fragment implements BeaconConsumer{
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.beacon_search, container, false);
-        initialize(v);
+        rl = v.findViewById(R.id.Relative_One);
+        rv = v.findViewById(R.id.search_recycler);
         return v;
     }
-    public void initialize(View v){
-        rl = v.findViewById(R.id.Relative_One);
-        rl.setVisibility(View.GONE);
-        rv = v.findViewById(R.id.search_recycler);
-        layoutManager = new LinearLayoutManager(getActivity());
-        rv.setLayoutManager(layoutManager);
-    }
+
     @Override
     public void onBeaconServiceConnect() {
+
+        final Region region = new Region("myBeaons",null, null, null);
 
         beaconManager.addMonitorNotifier(new MonitorNotifier() {
             @Override
             public void didEnterRegion(Region region) {
                 System.out.println("ENTER ------------------->");
+                try {
+                    beaconManager.startRangingBeaconsInRegion(region);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public void didExitRegion(Region region) {
                 System.out.println("EXIT----------------------->");
+                try {
+                    beaconManager.stopRangingBeaconsInRegion(region);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -78,12 +94,22 @@ public class BeaconSearc extends Fragment implements BeaconConsumer{
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
                 if (beacons.size() > 0) {
-                    ArrayList<ArrayList<String>> arrayList = new ArrayList<ArrayList<String>>();
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            rl.setVisibility(View.GONE);
+                            rv.setVisibility(View.VISIBLE);
+                            layoutManager = new LinearLayoutManager(getActivity());
+                            rv.setLayoutManager(layoutManager);
+                        }
+                    });
+                    final ArrayList<ArrayList<String>> arrayList = new ArrayList<ArrayList<String>>();
                     for (Beacon b:beacons){
                         String uuid = String.valueOf(b.getId1());
                         String major = String.valueOf(b.getId2());
                         String minor = String.valueOf(b.getId3());
                         String distance = String.valueOf(b.getDistance());
+                        System.out.println(uuid);
                         ArrayList<String> arr = new ArrayList<String>();
                         arr.add(uuid);
                         arr.add(major);
@@ -91,31 +117,40 @@ public class BeaconSearc extends Fragment implements BeaconConsumer{
                         arr.add(distance);
                         arrayList.add(arr);
                     }
-                    RecyclerAdapter recyclerAdapter = new RecyclerAdapter(arrayList);
-                    rv.setAdapter(recyclerAdapter);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter = new RecyclerAdapter(arrayList);
+                            rv.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
                 }
             }
         });
         try {
-            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
-            //beaconManager.startMonitoringBeaconsInRegion(new Region("myMonitoringUniqueId", null, null, null));
+            beaconManager.startMonitoringBeaconsInRegion(region);
         } catch (RemoteException e) {    }
     }
+
     @Override
     public Context getApplicationContext() {
-        return null;
+        return getActivity().getApplicationContext();
     }
+
     @Override
     public void unbindService(ServiceConnection serviceConnection) {
-
+        getActivity().unbindService(serviceConnection);
     }
+
     @Override
     public boolean bindService(Intent intent, ServiceConnection serviceConnection, int i) {
-        return false;
+        return getActivity().bindService(intent, serviceConnection, i);
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
-        beaconManager.bind(this);
+        beaconManager.unbind(this);
     }
 }
