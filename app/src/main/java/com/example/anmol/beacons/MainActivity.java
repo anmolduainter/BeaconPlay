@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements BeaconConsumer{
+public class MainActivity extends AppCompatActivity{
 
 
     private Toolbar toolbar;
@@ -40,14 +40,13 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer{
     private ViewPager viewPager;
 
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
-    private BeaconManager beaconManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initializedLayout();
-//        checkPermission();
+        checkPermission();
 
 //        beaconManager = BeaconManager.getInstanceForApplication(this);
 //        // To detect proprietary beacons, you must add a line like below corresponding to your beacon
@@ -148,45 +147,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer{
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
         }
-    }
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        beaconManager.bind(this);
-    }
-    @Override
-    public void onBeaconServiceConnect() {
-        beaconManager.addMonitorNotifier(new MonitorNotifier() {
-            @Override
-            public void didEnterRegion(Region region) {
-                System.out.println("ENTER ------------------->");
-            }
-
-            @Override
-            public void didExitRegion(Region region) {
-                System.out.println("EXIT----------------------->");
-            }
-
-            @Override
-            public void didDetermineStateForRegion(int state, Region region) {
-                System.out.println( "I have just switched from seeing/not seeing beacons: "+state);
-            }
-        });
-
-        beaconManager.addRangeNotifier(new RangeNotifier() {
-            @Override
-            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-                if (beacons.size() > 0) {
-                        for (Beacon b:beacons){
-                            System.out.println("------"+b.getId1()+"----------->" + b.getDataFields());
-                        }
-                }
-            }
-        });
-        try {
-            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
-            //beaconManager.startMonitoringBeaconsInRegion(new Region("myMonitoringUniqueId", null, null, null));
-        } catch (RemoteException e) {    }
     }
 }
 
