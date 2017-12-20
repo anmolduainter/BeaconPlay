@@ -22,7 +22,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".BeaconService"/>
+        <service android:name=".BeaconService"
+            android:enabled="true"/>
+        <receiver android:name=".BeaconBroadCast"
+            android:enabled="true"
+            android:exported="true"
+            android:label="RestartServiceWhenStopped">
+            <intent-filter>
+                <action android:name="RestartBeaconService"></action>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

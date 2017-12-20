@@ -148,5 +148,12 @@ public class MainActivity extends AppCompatActivity{
             return mFragmentTitleList.get(position);
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Intent broadcastIntent = new Intent("RestartBeaconService");
+        sendBroadcast(broadcastIntent);
+    }
 }
 

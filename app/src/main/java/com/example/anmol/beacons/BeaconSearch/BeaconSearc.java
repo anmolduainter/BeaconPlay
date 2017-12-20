@@ -1,12 +1,17 @@
 package com.example.anmol.beacons.BeaconSearch;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import com.example.anmol.beacons.MainActivity;
 import com.example.anmol.beacons.R;
 
 import org.altbeacon.beacon.Beacon;
@@ -37,17 +43,14 @@ public class BeaconSearc extends Fragment  implements BeaconConsumer{
     private BeaconManager beaconManager;
     private ProgressBar pb;
 
-
     public BeaconSearc() {
-        // Required empty public constructor
+
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         beaconManager = BeaconManager.getInstanceForApplication(getActivity());
-        // To detect proprietary beacons, you must add a line like below corresponding to your beacon
-        // type.  Do a web search for "setBeaconLayout" to get the proper expression.
         beaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
         beaconManager.setForegroundScanPeriod(3000);
