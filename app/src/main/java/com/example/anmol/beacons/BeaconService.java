@@ -7,21 +7,31 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.view.View;
 
+import com.example.anmol.beacons.BeaconSearch.RecyclerAdapter;
+
+import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.MonitorNotifier;
+import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver;
 import org.altbeacon.beacon.startup.BootstrapNotifier;
 import org.altbeacon.beacon.startup.RegionBootstrap;
 
-public class BeaconService extends Service  implements BootstrapNotifier{
+import java.util.ArrayList;
+import java.util.Collection;
 
-    private RegionBootstrap regionBootstrap;
+public class BeaconService extends Service implements BeaconConsumer{
+
     private BackgroundPowerSaver backgroundPowerSaver;
-
+    private BeaconManager beaconManager;
 
     @Nullable
     @Override
@@ -31,29 +41,13 @@ public class BeaconService extends Service  implements BootstrapNotifier{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        BeaconManager beaconManager = BeaconManager.getInstanceForApplication(this);
-        Region region = new Region("MyRegion" , null , null , null);
-        regionBootstrap = new RegionBootstrap(this,region);
+        beaconManager = BeaconManager.getInstanceForApplication(this);
         backgroundPowerSaver = new BackgroundPowerSaver(this);
         beaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
         beaconManager.setForegroundScanPeriod(3000);
-        beaconManager.bind((BeaconConsumer) this);
+        beaconManager.bind(BeaconService.this);
         return super.onStartCommand(intent, flags, startId);
-    }
-
-    @Override
-    public void didEnterRegion(Region region) {
-        showNotification("hello","hello");
-    }
-
-    @Override
-    public void didExitRegion(Region region) {
-
-    }
-    @Override
-    public void didDetermineStateForRegion(int i, Region region) {
-
     }
 
     //show Notifications
@@ -73,5 +67,52 @@ public class BeaconService extends Service  implements BootstrapNotifier{
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(1, notification);
+    }
+
+    @Override
+    public void onBeaconServiceConnect() {
+        final Region region = new Region("myBeaons",null, null, null);
+
+        beaconManager.addMonitorNotifier(new MonitorNotifier() {
+            @Override
+            public void didEnterRegion(Region region) {
+                System.out.println("ENTER ------------------->");
+                try {
+                    showNotification("A new Beacon Found","Please check the app for more info");
+                    beaconManager.startRangingBeaconsInRegion(region);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void didExitRegion(Region region) {
+                System.out.println("EXIT----------------------->");
+                try {
+                    beaconManager.stopRangingBeaconsInRegion(region);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void didDetermineStateForRegion(int state, Region region) {
+                System.out.println( "I have just switched from seeing/not seeing beacons: "+state);
+            }
+        });
+
+        beaconManager.addRangeNotifier(new RangeNotifier() {
+            @Override
+            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+                if (beacons.size() > 0) {
+                    for (Beacon b:beacons){
+
+                    }
+                }
+            }
+        });
+        try {
+            beaconManager.startMonitoringBeaconsInRegion(region);
+        } catch (RemoteException e) {    }
     }
 }

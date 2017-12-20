@@ -130,14 +130,18 @@ public class BeaconSearc extends Fragment  implements BeaconConsumer{
                         arr.add(distance);
                         arrayList.add(arr);
                     }
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter = new RecyclerAdapter(arrayList);
-                            rv.setAdapter(adapter);
-                            adapter.notifyDataSetChanged();
-                        }
-                    });
+                    try {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter = new RecyclerAdapter(arrayList);
+                                rv.setAdapter(adapter);
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+                    }catch(Exception e){
+
+                    }
                 }
                 else if (beacons.size()==0) {
                     try {
