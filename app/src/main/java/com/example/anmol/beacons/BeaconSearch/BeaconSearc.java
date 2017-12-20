@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class BeaconSearc extends Fragment  implements BeaconConsumer{
+
     RelativeLayout rl;
     private RecyclerView rv;
     private RecyclerView.LayoutManager layoutManager;
@@ -40,6 +41,7 @@ public class BeaconSearc extends Fragment  implements BeaconConsumer{
     public BeaconSearc() {
         // Required empty public constructor
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +50,7 @@ public class BeaconSearc extends Fragment  implements BeaconConsumer{
         // type.  Do a web search for "setBeaconLayout" to get the proper expression.
         beaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
+        beaconManager.setForegroundScanPeriod(3000);
         beaconManager.bind(this);
     }
 
@@ -93,20 +96,26 @@ public class BeaconSearc extends Fragment  implements BeaconConsumer{
                 System.out.println( "I have just switched from seeing/not seeing beacons: "+state);
             }
         });
+
         beaconManager.addRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
                 if (beacons.size() > 0) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            pb.setVisibility(View.INVISIBLE);
-                            rl.setVisibility(View.GONE);
-                            rv.setVisibility(View.VISIBLE);
-                            layoutManager = new LinearLayoutManager(getActivity());
-                            rv.setLayoutManager(layoutManager);
-                        }
-                    });
+                    try{
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pb.setVisibility(View.INVISIBLE);
+                                rl.setVisibility(View.GONE);
+                                rv.setVisibility(View.VISIBLE);
+                                layoutManager = new LinearLayoutManager(getActivity());
+                                rv.setLayoutManager(layoutManager);
+                            }
+                       });
+                    }
+                    catch(Exception e){
+
+                    }
                     final ArrayList<ArrayList<String>> arrayList = new ArrayList<ArrayList<String>>();
                     for (Beacon b:beacons){
                         String uuid = String.valueOf(b.getId1());
@@ -130,15 +139,19 @@ public class BeaconSearc extends Fragment  implements BeaconConsumer{
                         }
                     });
                 }
-                else if (beacons.size()==0){
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            pb.setVisibility(View.INVISIBLE);
-                            rl.setVisibility(View.VISIBLE);
-                            rv.setVisibility(View.GONE);
-                        }
-                    });
+                else if (beacons.size()==0) {
+                    try {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pb.setVisibility(View.INVISIBLE);
+                                rl.setVisibility(View.VISIBLE);
+                                rv.setVisibility(View.GONE);
+                            }
+                        });
+                    } catch (Exception e) {
+
+                    }
                 }
             }
         });
