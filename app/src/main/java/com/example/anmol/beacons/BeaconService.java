@@ -20,6 +20,8 @@ public class BeaconService extends Service implements BootstrapNotifier{
     private BeaconManager beaconManager;
     private RegionBootstrap regionBootstrap;
 
+  //  public static boolean isServiceRunning = false;
+
 
     @Nullable
     @Override
@@ -29,10 +31,14 @@ public class BeaconService extends Service implements BootstrapNotifier{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        beaconManager = BeaconManager.getInstanceForApplication(this);
-        backgroundPowerSaver = new BackgroundPowerSaver(this);
-        Region region = new Region("com.example.myapp.boostrapRegion", null, null, null);
-        regionBootstrap = new RegionBootstrap(this, region);
+ //       if (!isServiceRunning){
+ //           isServiceRunning = true;
+            System.out.println("SERVICE CALLED ------------------------------------------------->");
+            beaconManager = BeaconManager.getInstanceForApplication(this);
+            backgroundPowerSaver = new BackgroundPowerSaver(this);
+            Region region = new Region("com.example.myapp.boostrapRegion", null, null, null);
+            regionBootstrap = new RegionBootstrap(this, region);
+ //       }
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -58,19 +64,20 @@ public class BeaconService extends Service implements BootstrapNotifier{
     @Override
     public void onDestroy() {
         super.onDestroy();
-        startBroadcasting();
+ //       isServiceRunning = false;
+ //       startBroadcasting();
     }
 
     @Override
     public void didEnterRegion(Region region) {
         showNotification("A new Beacon Found","Please check the app for more info");
-        startBroadcasting();
+ //       startBroadcasting();
     }
 
     @Override
     public void didExitRegion(Region region) {
         showNotification("Beacon Exit","Please check the app for more info");
-        startBroadcasting();
+ //       startBroadcasting();
     }
 
     @Override
@@ -82,53 +89,4 @@ public class BeaconService extends Service implements BootstrapNotifier{
         Intent broadcastIntent = new Intent("RestartBeaconService");
         sendBroadcast(broadcastIntent);
     }
-
-//    @Override
-//    public void onBeaconServiceConnect() {
-//        final Region region = new Region("myBeaons",null, null, null);
-//
-//        beaconManager.addMonitorNotifier(new MonitorNotifier() {
-//            @Override
-//            public void didEnterRegion(Region region) {
-//                System.out.println("ENTER ------------------->");
-//                try {
-//                    showNotification("A new Beacon Found","Please check the app for more info");
-//                    beaconManager.startRangingBeaconsInRegion(region);
-//                } catch (RemoteException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            @Override
-//            public void didExitRegion(Region region) {
-//                System.out.println("EXIT----------------------->");
-//                try {
-//                    showNotification("Beacon Exit","Please check the app for more info");
-//                    beaconManager.stopRangingBeaconsInRegion(region);
-//                } catch (RemoteException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            @Override
-//            public void didDetermineStateForRegion(int state, Region region) {
-//                System.out.println( "I have just switched from seeing/not seeing beacons: "+state);
-//            }
-//        });
-//
-//        beaconManager.addRangeNotifier(new RangeNotifier() {
-//            @Override
-//            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-//                if (beacons.size() > 0) {
-//                    for (Beacon b:beacons){
-//
-//                    }
-//                }
-//            }
-//        });
-//        try {
-//            beaconManager.startMonitoringBeaconsInRegion(region);
-//        } catch (RemoteException e) {    }
-//    }
-
 }

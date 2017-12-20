@@ -30,6 +30,8 @@
             android:label="RestartServiceWhenStopped">
             <intent-filter>
                 <action android:name="RestartBeaconService"></action>
+                <action android:name="android.intent.action.BATTERY_CHANGED"></action>
+                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
             </intent-filter>
         </receiver>
     </application>
