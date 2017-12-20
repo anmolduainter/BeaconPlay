@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.example.anmol.beacons.R;
@@ -33,6 +34,7 @@ public class BeaconSearc extends Fragment  implements BeaconConsumer{
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.Adapter adapter;
     private BeaconManager beaconManager;
+    private ProgressBar pb;
 
 
     public BeaconSearc() {
@@ -56,6 +58,7 @@ public class BeaconSearc extends Fragment  implements BeaconConsumer{
         View v = inflater.inflate(R.layout.beacon_search, container, false);
         rl = v.findViewById(R.id.Relative_One);
         rv = v.findViewById(R.id.search_recycler);
+        pb = v.findViewById(R.id.pb);
         return v;
     }
 
@@ -97,6 +100,7 @@ public class BeaconSearc extends Fragment  implements BeaconConsumer{
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            pb.setVisibility(View.INVISIBLE);
                             rl.setVisibility(View.GONE);
                             rv.setVisibility(View.VISIBLE);
                             layoutManager = new LinearLayoutManager(getActivity());
@@ -123,6 +127,16 @@ public class BeaconSearc extends Fragment  implements BeaconConsumer{
                             adapter = new RecyclerAdapter(arrayList);
                             rv.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+                else if (beacons.size()==0){
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pb.setVisibility(View.INVISIBLE);
+                            rl.setVisibility(View.VISIBLE);
+                            rv.setVisibility(View.GONE);
                         }
                     });
                 }
