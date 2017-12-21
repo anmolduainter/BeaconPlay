@@ -34,7 +34,7 @@ import org.altbeacon.beacon.Region;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class BeaconSearc extends Fragment  implements BeaconConsumer{
+public class BeaconSearc extends Fragment implements BeaconConsumer{
 
     RelativeLayout rl;
     private RecyclerView rv;
@@ -43,17 +43,12 @@ public class BeaconSearc extends Fragment  implements BeaconConsumer{
     private BeaconManager beaconManager;
     private ProgressBar pb;
 
-    public BeaconSearc() {
-
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         beaconManager = BeaconManager.getInstanceForApplication(getActivity());
         beaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
-        beaconManager.setForegroundScanPeriod(3000);
         beaconManager.bind(this);
     }
 
@@ -62,6 +57,8 @@ public class BeaconSearc extends Fragment  implements BeaconConsumer{
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.beacon_search, container, false);
+
+        // intializing
         rl = v.findViewById(R.id.Relative_One);
         rv = v.findViewById(R.id.search_recycler);
         pb = v.findViewById(R.id.pb);
@@ -72,6 +69,9 @@ public class BeaconSearc extends Fragment  implements BeaconConsumer{
     public void onBeaconServiceConnect() {
 
         final Region region = new Region("myBeaons",null, null, null);
+
+
+        //Moniotor Notifier
 
         beaconManager.addMonitorNotifier(new MonitorNotifier() {
             @Override
@@ -100,6 +100,7 @@ public class BeaconSearc extends Fragment  implements BeaconConsumer{
             }
         });
 
+        //Range Notifier
         beaconManager.addRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
@@ -121,11 +122,14 @@ public class BeaconSearc extends Fragment  implements BeaconConsumer{
                     }
                     final ArrayList<ArrayList<String>> arrayList = new ArrayList<ArrayList<String>>();
                     for (Beacon b:beacons){
+                        //UUID
                         String uuid = String.valueOf(b.getId1());
+                        //Major
                         String major = String.valueOf(b.getId2());
+                        //Minor
                         String minor = String.valueOf(b.getId3());
+                        //Distance
                         String distance = String.valueOf(b.getDistance());
-                        System.out.println(uuid);
                         ArrayList<String> arr = new ArrayList<String>();
                         arr.add(uuid);
                         arr.add(major);

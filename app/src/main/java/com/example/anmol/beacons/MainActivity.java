@@ -21,6 +21,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.example.anmol.beacons.BeaconSearch.BeaconSearc;
 import com.example.anmol.beacons.BeaconSearch.RecyclerAdapter;
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         checkPermission();
         setContentView(R.layout.activity_main);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         initializedLayout();
     }
 
@@ -152,7 +154,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Intent broadcastIntent = new Intent("RestartBeaconService");
+        Intent broadcastIntent = new Intent("com.example.anmol.beacons.RestartBeaconService");
         sendBroadcast(broadcastIntent);
     }
 }

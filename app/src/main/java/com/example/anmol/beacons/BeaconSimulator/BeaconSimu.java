@@ -82,6 +82,13 @@ public class BeaconSimu extends Fragment {
                                 .setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25");
                         BeaconTransmitter beaconTransmitter = new BeaconTransmitter(getActivity(), beaconParser);
                         beaconTransmitter.startAdvertising(beacon);
+                        SuperActivityToast.create(getActivity(), new Style(), Style.TYPE_BUTTON)
+                                .setText("Successfully Started")
+                                .setDuration(Style.DURATION_LONG)
+                                .setFrame(Style.FRAME_LOLLIPOP)
+                                .setColor(PaletteUtils.getSolidColor(PaletteUtils.MATERIAL_PURPLE))
+                                .setAnimations(Style.ANIMATIONS_POP).show();
+                        b1.setEnabled(false);
                     }
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
