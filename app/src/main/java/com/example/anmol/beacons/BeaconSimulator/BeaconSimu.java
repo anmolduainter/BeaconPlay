@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.BounceInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -88,6 +90,12 @@ public class BeaconSimu extends Fragment {
                                 .setFrame(Style.FRAME_LOLLIPOP)
                                 .setColor(PaletteUtils.getSolidColor(PaletteUtils.MATERIAL_PURPLE))
                                 .setAnimations(Style.ANIMATIONS_POP).show();
+                        AlphaAnimation alphaAnimation = new AlphaAnimation(1,0);
+                        alphaAnimation.setDuration(2000);
+                        alphaAnimation.setFillEnabled(true);
+                        alphaAnimation.setInterpolator(new BounceInterpolator());
+                        b1.startAnimation(alphaAnimation);
+                        b1.setText("Beacon already Made");
                         b1.setEnabled(false);
                     }
                 } catch (MalformedURLException e) {

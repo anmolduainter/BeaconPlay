@@ -154,8 +154,8 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Intent broadcastIntent = new Intent("com.example.anmol.beacons.RestartBeaconService");
-        sendBroadcast(broadcastIntent);
+//        Intent broadcastIntent = new Intent("com.example.anmol.beacons.RestartBeaconService");
+//        sendBroadcast(broadcastIntent);
     }
 }
 

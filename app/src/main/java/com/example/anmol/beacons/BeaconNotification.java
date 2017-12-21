@@ -1,7 +1,9 @@
 package com.example.anmol.beacons;
 
 import android.app.Application;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
+import android.widget.Toast;
 
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
@@ -19,6 +21,18 @@ public class BeaconNotification extends Application implements BootstrapNotifier
     @Override
     public void onCreate() {
         super.onCreate();
+
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            Toast.makeText(getApplicationContext(),"Bluetooth Not Supported",Toast.LENGTH_LONG).show();
+        } else {
+            if (!mBluetoothAdapter.isEnabled()) {
+                Intent bluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                bluetoothIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(bluetoothIntent);
+            }
+        }
+
         beaconManager = org.altbeacon.beacon.BeaconManager.getInstanceForApplication(this);
         beaconManager.getBeaconParsers().add(new BeaconParser()
                 .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
@@ -52,7 +66,7 @@ public class BeaconNotification extends Application implements BootstrapNotifier
     public void didExitRegion(Region region) {
 
         try {
-            Intent k = new Intent(getApplicationContext(), BeaconService.class);
+            Intent k = new Intent(getApplicationContext(),BeaconService.class);
             startService(k);
         }
         catch (Exception e) {
@@ -64,7 +78,7 @@ public class BeaconNotification extends Application implements BootstrapNotifier
     public void didDetermineStateForRegion(int i, Region region) {
 
         try {
-            Intent k = new Intent(getApplicationContext(),         BeaconService.class);
+            Intent k = new Intent(getApplicationContext(), BeaconService.class);
             startService(k);
         }
         catch (Exception e) {

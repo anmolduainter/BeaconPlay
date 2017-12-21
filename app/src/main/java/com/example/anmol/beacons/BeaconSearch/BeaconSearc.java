@@ -129,12 +129,13 @@ public class BeaconSearc extends Fragment implements BeaconConsumer{
                         //Minor
                         String minor = String.valueOf(b.getId3());
                         //Distance
-                        String distance = String.valueOf(b.getDistance());
+                        double distance1 =b.getDistance();
+                        String distance = String.valueOf(Math.round(distance1*100.0)/100.0);
                         ArrayList<String> arr = new ArrayList<String>();
                         arr.add(uuid);
                         arr.add(major);
                         arr.add(minor);
-                        arr.add(distance);
+                        arr.add(distance + " meters");
                         arrayList.add(arr);
                     }
                     try {
