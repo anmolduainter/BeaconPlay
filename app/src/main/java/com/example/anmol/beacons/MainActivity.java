@@ -41,9 +41,13 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity{
 
-
+    // ToolBar
     private Toolbar toolbar;
+
+    // TabLayout
     private TabLayout tabLayout;
+
+    // ViewPager
     private ViewPager viewPager;
 
 
@@ -52,25 +56,38 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Checking Permission whether ACCESS_COARSE_LOCATION permssion is granted or not
         checkPermission();
+
+        // Setting up of view
         setContentView(R.layout.activity_main);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        // Intializing of Layout Views
         initializedLayout();
     }
 
 
-    //initalizing layout
+    //Intializing of Layout Views
     public void initializedLayout(){
+
+        // Setting up of customized toolbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // Setting up of View Pager
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
+
+        //Setting up of TabLayout
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
     }
 
 
+
+    // Checking Permission whether ACCESS_COARSE_LOCATION permssion is granted or not
     public void checkPermission(){
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
@@ -95,9 +112,14 @@ public class MainActivity extends AppCompatActivity{
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_COARSE_LOCATION: {
+
+                // If Permission is Granted than its ok
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //Log.d(TAG, "coarse location permission granted");
-                } else {
+
+                }
+
+                // If not Granted then alert the user by the message
+                else {
                     final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle("Functionality limited");
                     builder.setMessage("Since location access has not been granted, this app will not be able to discover beacons when in the background.");
@@ -115,6 +137,12 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
+    /*
+       Setting up of View Pager
+       2 Fragments :
+       -> BeaconSearc() == Search
+       -> BeaconSimu() == Simulator
+     */
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new BeaconSearc() , "Search");
@@ -122,6 +150,8 @@ public class MainActivity extends AppCompatActivity{
         viewPager.setAdapter(adapter);
     }
 
+
+    // Setting up the ViewPagerAdapter
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
@@ -151,11 +181,5 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-//        Intent broadcastIntent = new Intent("com.example.anmol.beacons.RestartBeaconService");
-//        sendBroadcast(broadcastIntent);
-    }
 }
 

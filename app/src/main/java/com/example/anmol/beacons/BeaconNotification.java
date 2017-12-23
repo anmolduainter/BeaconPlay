@@ -12,6 +12,9 @@ import org.altbeacon.beacon.powersave.BackgroundPowerSaver;
 import org.altbeacon.beacon.startup.BootstrapNotifier;
 import org.altbeacon.beacon.startup.RegionBootstrap;
 
+/*
+    This is the Application class that implements BootstrapNotifier Interface
+ */
 public class BeaconNotification extends Application implements BootstrapNotifier {
     public static BeaconManager beaconManager;
     private RegionBootstrap regionBootstrap;
@@ -84,6 +87,8 @@ public class BeaconNotification extends Application implements BootstrapNotifier
     @Override
     public void didEnterRegion(Region region) {
         try {
+
+            // Starting the BeaconService class that extends Service
             Intent i = new   Intent(getApplicationContext(), BeaconService.class);
             startService(i);
         } catch (Exception e){}
@@ -97,6 +102,7 @@ public class BeaconNotification extends Application implements BootstrapNotifier
     public void didExitRegion(Region region) {
 
         try {
+            // Starting the BeaconService class that extends Service
             Intent k = new Intent(getApplicationContext(),BeaconService.class);
             startService(k);
         }
@@ -113,6 +119,7 @@ public class BeaconNotification extends Application implements BootstrapNotifier
     public void didDetermineStateForRegion(int i, Region region) {
 
         try {
+            // Starting the BeaconService class that extends Service
             Intent k = new Intent(getApplicationContext(), BeaconService.class);
             startService(k);
         }

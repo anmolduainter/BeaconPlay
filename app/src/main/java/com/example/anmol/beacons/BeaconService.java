@@ -25,15 +25,17 @@ import org.altbeacon.beacon.startup.RegionBootstrap;
 
 import java.util.Collection;
 
-public class BeaconService extends Service implements BeaconConsumer,MonitorNotifier {
+/*
+    This class is a service which will run in background and will notify the user through notification
+    message whether he enters the beacon region or exited the beacon region.
+ */
 
-    private BackgroundPowerSaver backgroundPowerSaver;
-    private BeaconManager beaconManager;
-    private RegionBootstrap regionBootstrap;
+public class BeaconService extends Service implements BeaconConsumer,MonitorNotifier {
 
     @Override
     public void onCreate() {
         super.onCreate();
+        // Binding the BeaconNotification Application Class BeaconManager to BeaconService.
         BeaconNotification.beaconManager.bind(this);
     }
 
@@ -43,37 +45,55 @@ public class BeaconService extends Service implements BeaconConsumer,MonitorNoti
         return null;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-            System.out.println("SERVICE CALLED ------------------------------------------------->");
+        // Printing to check whether service called inside logcat
+        System.out.println("SERVICE CALLED ------------------------------------------------->");
+
         return Service.START_STICKY;
     }
 
+
     @Override
     public void onBeaconServiceConnect() {
+        //Specifies a class that should be called each time
+        // the BeaconService sees or stops seeing a Region of beacons.
         BeaconNotification.beaconManager.addMonitorNotifier(this);
     }
 
-
+    /*
+      This override method is runned when some beacon will come under the range of device.
+    */
     @Override
     public void didEnterRegion(Region region) {
-        showNotification("Found Beacon in the range","For more info go the app");
 
+        // Showing Notification that beacon is found
+        showNotification("Found Beacon in the range","For more info go the app");
     }
 
+
+    /*
+        This override method is runned when beacon that comes in the range of device
+        ,now been exited from the range of device.
+     */
     @Override
     public void didExitRegion(Region region) {
-        showNotification("Founded Beacon Exited","For more info go the app");
 
+        // Showing Notification that beacon is exited from region
+        showNotification("Founded Beacon Exited","For more info go the app");
     }
 
+
+    /*
+      This override method will Determine the state for the device , whether device is in range
+       of beacon or not , if yes then i = 1 and if no then i = 0
+    */
     @Override
     public void didDetermineStateForRegion(int i, Region region) {
 
     }
 
-    //show Notifications
+    // Method for Showing Notifications
     public void showNotification(String title, String message) {
         Intent notifyIntent = new Intent(this, MainActivity.class);
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -92,9 +112,19 @@ public class BeaconService extends Service implements BeaconConsumer,MonitorNoti
         notificationManager.notify(1, notification);
     }
 
+    // Method to start Broadcasting to restart the service
+    // (BeaconBroadcast class)
     public void startBroadcasting(){
         Intent broadcastIntent = new Intent("com.example.anmol.beacons.RestartBeaconService");
         sendBroadcast(broadcastIntent);
+    }
+
+    // Override onDestroy method
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // if by chance service gets destroyed then start broadcasting to again start the service.
+        startBroadcasting();
     }
 
     @Override
@@ -108,11 +138,5 @@ public class BeaconService extends Service implements BeaconConsumer,MonitorNoti
                 AlarmManager.ELAPSED_REALTIME,
                 SystemClock.elapsedRealtime() + 1000,
                 restartServicePendingIntent);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        startBroadcasting();
     }
 }
